@@ -18,10 +18,13 @@ egui = "0.18.0"
 eframe = { version = "0.18.0" }
 tokio = { version = "1.0.0", features = ["full"] }
 tungstenite = "0.17.2"
-tokio-tungstenite = "*"
+tokio-tungstenite = { version = "0.17.1", features = ["native-tls"] }
 futures-util = { version = "0.3", features = ["sink", "std"] }
 futures-channel = "*"
 url = "2.0.0"
+serde_json = "*"
+reqwest = { version = "*", features = ["blocking"] }
+chatroom = { path = "../chatroom" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tracing-subscriber = "0.3"
