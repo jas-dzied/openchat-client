@@ -75,7 +75,7 @@ impl ChatApp {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
 
         let mut servers = vec![];
-        let body = reqwest::blocking::get("http://127.0.0.1:8000/get_servers").unwrap().text().unwrap();
+        let body = reqwest::blocking::get("http://82.35.235.223:8000/get_servers").unwrap().text().unwrap();
         for (server_name, server_url) in serde_json::from_str::<std::collections::HashMap<String, String>>(&body).unwrap() {
             servers.push(ChatServer{
                 name: server_name,
