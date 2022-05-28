@@ -201,6 +201,7 @@ dependencies = [
 name = "client"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "chatroom",
  "console_error_panic_hook",
  "eframe",
