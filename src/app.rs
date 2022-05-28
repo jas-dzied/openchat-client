@@ -10,6 +10,7 @@ pub struct ChatApp {
     username: String,
     host_server_name: String,
     host_server_url: String,
+    host_server_public: String,
     socket: Option<SocketReader>,
     messages: Arc<Mutex<Vec<ChatMessage>>>,
     mode: i32,
@@ -41,6 +42,7 @@ macro_rules! connect_to_server {
                 .unwrap()
                 .block_on(async {
                     tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
+                    println!("Attempting to connect to url: {}", current_server);
                     let url = url::Url::parse(&current_server).unwrap();
                     let (ws_stream, _) = connect_async(url).await.expect("Failed to connect");
                     let (mut write, read) = ws_stream.split();
@@ -87,7 +89,8 @@ impl ChatApp {
             message: String::new(),
             username: String::from("Username"),
             host_server_name: String::new(),
-            host_server_url: String::from("127.0.0.1:8080"),
+            host_server_url: String::from("192.168.0.36:8080"),
+            host_server_public: String::from("82.35.235.223:8080"),
             socket: None,
             messages: Arc::new(Mutex::new(vec![])),
             mode: 0,
@@ -100,7 +103,7 @@ impl eframe::App for ChatApp {
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
 
-        let Self { message, username, host_server_name, host_server_url, messages, socket, mode, servers } = self;
+        let Self { message, username, host_server_name, host_server_url, host_server_public, messages, socket, mode, servers } = self;
         match mode {
             0 => {
                 egui::CentralPanel::default().show(ctx, |ui| {
@@ -132,22 +135,27 @@ impl eframe::App for ChatApp {
                         ui.label("Server url: ");
                         ui.text_edit_singleline(host_server_url);
                     });
+                    ui.horizontal(|ui| {
+                        ui.label("Server public url: ");
+                        ui.text_edit_singleline(host_server_public);
+                    });
                     if ui.button("Host").clicked() {
                         let hs_name = host_server_name.to_string().clone();
                         let hs_url = host_server_url.to_string().clone();
                         let hs_name_2 = hs_name.clone();
-                        let hs_url_2 = hs_url.clone();
+                        let hs_public = host_server_public.to_string().clone();
+                        let hs_public_2 = hs_public.clone();
                         std::thread::spawn(move || {
                             tokio::runtime::Builder::new_multi_thread()
                                 .enable_all()
                                 .build()
                                 .unwrap()
                                 .block_on(async {
-                                    chatroom::host_room(hs_name, hs_url).await.unwrap();
+                                    chatroom::host_room(hs_name, hs_url, hs_public).await.unwrap();
                                 });
                         });
-                        let mut url_string = String::from("ws//");
-                        url_string.push_str(&hs_url_2);
+                        let mut url_string = String::from("ws://");
+                        url_string.push_str(&hs_public_2);
                         connect_to_server!(ChatServer {
                             name: hs_name_2,
                             url: url_string
