@@ -146,7 +146,7 @@ impl eframe::App for ChatApp {
                                     chatroom::host_room(hs_name, hs_url).await.unwrap();
                                 });
                         });
-                        let mut url_string = String::from("wss://");
+                        let mut url_string = String::from("ws//");
                         url_string.push_str(&hs_url_2);
                         connect_to_server!(ChatServer {
                             name: hs_name_2,
